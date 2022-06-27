@@ -8,9 +8,9 @@ This is a MERN ( mongodb, express, react, node) Stack Shopping Cart that uses St
 
 To run the project locally you have to install Nodejs version 10+. Clone the project and run `npm install` from the root directory to install all the dependencies for the project. This project depends on some environment variables. Rename the `.env.example` files to `.env` and set the following variable to your values.
 
-- DATABASE_URI = Insert Database URI string for mongodb
+- STRIPE_SECRET_KEY = Insert Stripe Secret Key
 - PORT = The port number where the application will be run
-- SECRET_KEY = The secret key for storing session (Can be anything)
+- STRIPE_PUBLIC_KEY = Insert the Stripe Public Key
 
 Once you set the environment variables try to run below commands:
 
