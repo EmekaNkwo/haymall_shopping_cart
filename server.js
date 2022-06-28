@@ -1,59 +1,56 @@
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-const stripePublicKey = process.env.STRIPE_PUBLIC_KEY;
-
+const cors = require("cors");
 const express = require("express");
 
 const app = express();
-const fs = require("fs");
-const stripe = require("stripe")(stripeSecretKey);
 
+const stripe = require("stripe")(stripeSecretKey);
+const uuid = require("uuid");
+
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 require("dotenv").config();
 
 app.use(express.json());
+app.use(cors());
 
 //routes
-app.get("/store", function (req, res) {
-  fs.readFile("items.json", (error, data) => {
-    if (error) {
-      res.status(500).end();
-    } else {
-      res.render("./client/app.js", {
-        stripePublicKey: stripePublicKey,
-        items: JSON.parse(data),
-      });
-    }
-  });
+
+app.get("/", (req, res) => {
+  res.send("Testing Payment Gateway");
 });
 
-app.post("/purchase", (req, res) => {
-  fs.readFile("items.json", (error, data) => {
-    if (error) {
-      res.status(500).end();
-    } else {
-      const itemsJson = JSON.parse(data);
-      const itemsArray = itemsJson.music.concat(itemsJson.merch);
-      let total = 0;
-      req.body.items.forEach(function (item) {
-        const itemJson = itemsArray.find((i) => {
-          return i.id == item.id;
-        });
-        total = total + itemJson.price * item.quantity;
-      });
+app.post("/payment", (req, res) => {
+  const { product, token } = req.body;
+  console.log("Product", product);
+  console.log("Price", price);
 
-      stripe.charges
-        .create({
-          amount: total,
-          source: req.body.stripeTokenId,
+  //ensures a user is not charged twice
+  const idempotencyKey = uuid();
+
+  return stripe.customers
+    .create({
+      email: token.email,
+      source: token.id,
+    })
+    .then((customer) => {
+      stripe.charges.create(
+        {
+          amount: product.price * 100,
           currency: "usd",
-        })
-        .then(() => {
-          console.log("Charge Successful");
-          res.json({ message: "Successfully purchased items" });
-        })
-        .catch(() => {
-          console.log("Charge Fail");
-          res.status(500).end();
-        });
-    }
-  });
+          customer: customer.id,
+          receipt_email: token.email,
+          description: `Purchased the ${product.name}`,
+          shipping: {
+            name: token.card.name,
+            address: {
+              country: token.card.address,
+            },
+          },
+        },
+        { idempotencyKey }
+      );
+    })
+    .then((result) => res.status(200).json(result))
+    .catch((err) => console.log(err));
 });
+
+app.listen(5000, () => console.log("Server running on 5000"));

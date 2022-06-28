@@ -1,0 +1,21 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: content-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+.app {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.app-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 50% auto;
+}
