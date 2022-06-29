@@ -1,12 +1,13 @@
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
 const cors = require("cors");
 const express = require("express");
 
 const app = express();
 
 const stripe = require("stripe")(stripeSecretKey);
-const uuid = require("uuid");
+const { v4: uuid } = require("uuid");
 
-const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 require("dotenv").config();
 
 app.use(express.json());
@@ -19,12 +20,15 @@ app.get("/", (req, res) => {
 });
 
 app.post("/payment", (req, res) => {
+  console.log(req.body);
   const { product, token } = req.body;
   console.log("Product", product);
-  console.log("Price", price);
+  console.log("Price", product.price);
 
   //ensures a user is not charged twice
   const idempotencyKey = uuid();
+
+  console.log(token);
 
   return stripe.customers
     .create({

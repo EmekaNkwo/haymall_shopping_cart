@@ -1,5 +1,6 @@
 import { useState } from "react";
 import StripeCheckout from "react-stripe-checkout";
+import axios from "axios";
 import "./App.css";
 
 function App() {
@@ -9,18 +10,17 @@ function App() {
     prodcutBy: "Me",
   });
 
-  const makepayment = (token) => {
+  const makePayment = async (token) => {
+    console.log(token);
     const body = {
       token,
       product,
     };
+    console.log(body);
     const headers = { "Content-Type": "application/json" };
 
-    return fetch(`https://localhost:5000/payment`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(body),
-    })
+    return axios
+      .post(`http://localhost:5000/payment`, body, headers)
       .then((response) => {
         console.log("Response: ", response);
         const { status } = response;
@@ -30,16 +30,16 @@ function App() {
   };
 
   return (
-    <div classname="app">
+    <div className="app text">
       <div className="app-body">
         <StripeCheckout
           stripeKey="pk_test_51LFPtwCAwegCSXTZnQrkcFhPSnocyBThgs1qXn10wdy4BPBc824WpZSFjKccPTt18rjKe7UNMK32RjAgWHpD6xD600DxH4frFM"
-          token={makepayment}
+          token={makePayment}
           name={`Buy ${product.name}`}
           amount={product.price * 100}
         >
           <button className="btn-large blue">
-            Buy Clothe for {product.price}
+            Buy Clothe for ${product.price}
           </button>
         </StripeCheckout>
       </div>
