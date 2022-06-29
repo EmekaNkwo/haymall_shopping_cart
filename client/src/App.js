@@ -30,7 +30,7 @@ function App() {
   };
 
   return (
-    <div className="app text">
+    <div className="app">
       <div className="app-body">
         <StripeCheckout
           stripeKey="pk_test_51LFPtwCAwegCSXTZnQrkcFhPSnocyBThgs1qXn10wdy4BPBc824WpZSFjKccPTt18rjKe7UNMK32RjAgWHpD6xD600DxH4frFM"
